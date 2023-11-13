@@ -1,17 +1,24 @@
 //  Add your code here
 const { Schema, model } = require("mongoose");
 
-const celebrityModel = new Schema(
+const movieModel = new Schema(
   {
-    name: {
+    title: {
       type: String,
     },
-    occupation: {
+    genre: {
       type: String,
     },
-    catchPhrase: {
+    plot: {
       type: String,
     },
+    cast: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "Celebrity",
+        required: true,
+      },
+    ],
     createdAt: {
       type: Date,
       default: Date.now,
@@ -22,6 +29,6 @@ const celebrityModel = new Schema(
   }
 );
 
-const Celebrity = model("Celebrities", celebrityModel);
+const Movie = model("Movies", movieModel);
 
-module.exports = Celebrity;
+module.exports = Movie;
