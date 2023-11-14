@@ -1,27 +1,15 @@
-//  Add your code here
-const { Schema, model } = require("mongoose");
+const mongoose = require("mongoose");
+const Schema = mongoose.Schema;
 
-const celebrityModel = new Schema(
-  {
-    name: {
-      type: String,
-    },
-    occupation: {
-      type: String,
-    },
-    catchPhrase: {
-      type: String,
-    },
-    createdAt: {
-      type: Date,
-      default: Date.now,
-    },
+const celebritySchema = new Schema({
+  name: { type: String, required: true },
+  occupation: {
+    type: String,
+    enum: ["actor", "singer", "comedian", "unknown"],
   },
-  {
-    timestamps: true,
-  }
-);
+  catchPhrase: { type: String, required: true },
+});
 
-const Celebrity = model("Celebrities", celebrityModel);
+const Celebrity = mongoose.model("Celebrity", celebritySchema);
 
 module.exports = Celebrity;
