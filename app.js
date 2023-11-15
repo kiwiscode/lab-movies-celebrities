@@ -20,13 +20,12 @@ const index = require("./routes/index");
 app.use("/", index);
 
 // Iteration 1 =>
-// start to check
+
 const celebritiesRoutes = require("./routes/celebrities.routes");
 app.use("/celebrities", celebritiesRoutes);
 
 const moviesRoutes = require("./routes/movies.routes");
 app.use("/movies", moviesRoutes);
-// finish to check
 
 require("./error-handling")(app);
 

@@ -2,49 +2,98 @@ const express = require("express");
 const router = express();
 const Celebrity = require("../models/Celebrity.model");
 const Movie = require("../models/Movie.model");
-router.get("/create", (req, res) => {
-  Celebrity.find()
-    .then((result) => {
-      res.render("movies/new-movie", { celebrities: result });
-    })
-    .catch((error) => {
-      console.log(error);
-    });
+
+// Iteration 6
+// router.get("/create", (req, res) => {
+//   Celebrity.find()
+//     .then((result) => {
+//       res.render("movies/new-movie", { celebrities: result });
+//     })
+//     .catch((error) => {
+//       console.log(error);
+//     });
+// });
+
+// SOLUTION 2
+router.get("/create", async (req, res, next) => {
+  try {
+    const celebsList = await Celebrity.find();
+    res.render("movies/new-movie.hbs", { celebrities: celebsList });
+  } catch (error) {
+    console.log(error);
+  }
 });
 
-router.post("/create", (req, res) => {
-  const { title, genre, plot, cast } = req.body;
+// router.post("/create", (req, res) => {
+//   const { title, genre, plot, cast } = req.body;
 
-  console.log(title, genre, plot, cast);
+//   console.log(title, genre, plot, cast);
 
-  Movie.create({
-    title,
-    genre,
-    plot,
-    cast: cast,
-  })
-    .then(() => {
-      res.redirect("/movies");
-    })
-    .catch(() => {
-      res.status(500).json({
-        errorMessage: "Error occured while trying to creating a new movie",
-      });
-    });
+//   Movie.create({
+//     title,
+//     genre,
+//     plot,
+//     cast: cast,
+//   })
+//     .then(() => {
+//       res.redirect("/movies");
+//     })
+//     .catch(() => {
+//       res.status(500).json({
+//         errorMessage: "Error occured while trying to creating a new movie",
+//       });
+//     });
+// });
+
+// SOLUTION 2
+router.post("/create", async (req, res) => {
+  try {
+    const { title, genre, plot, cast } = req.body;
+    await Movie.create({ title, genre, plot, cast });
+    res.redirect("/movies");
+  } catch (error) {
+    console.log(error);
+    res.render("movies/new-movie");
+  }
 });
 
-router.get("/", (req, res) => {
-  Movie.find()
-    .then((dataFromDataBase) => {
-      console.log(dataFromDataBase);
-      res.render("movies/movies.hbs", { movies: dataFromDataBase });
-    })
-    .catch(() => {
-      console.log("error occured while fetcing movies !");
-    });
+// Iteration 7
+// router.get("/", (req, res) => {
+//   Movie.find()
+//     .then((dataFromDataBase) => {
+//       console.log(dataFromDataBase);
+//       res.render("movies/movies.hbs", { movies: dataFromDataBase });
+//     })
+//     .catch(() => {
+//       console.log("error occured while fetcing movies !");
+//     });
+// });
+
+// SOLUTION 2
+router.get("/", async (req, res, next) => {
+  try {
+    const dataFromDataBase = await Movie.find();
+    res.render("movies/movies.hbs", { movies: dataFromDataBase });
+  } catch (error) {
+    console.log(err);
+  }
 });
 
-router.get("/:movieId", (req, res, next) => {
+// Iteration 8
+// router.get("/:movieId", (req, res, next) => {
+//   const movieId = req.params.movieId;
+
+//   Movie.findById(movieId)
+//     .populate("cast")
+//     .then((foundMovie) => {
+//       console.log(`foundMovie`, foundMovie);
+
+//       res.render("movies/movie-details", { foundMovie });
+//     });
+// });
+
+// SOLUTION 2
+router.get("/:movieId", async (req, res, next) => {
   const movieId = req.params.movieId;
 
   Movie.findById(movieId)
@@ -56,6 +105,7 @@ router.get("/:movieId", (req, res, next) => {
     });
 });
 
+// Iteration 9
 router.post("/:movieId/delete", (req, res) => {
   console.log(req.params.movieId);
 
@@ -69,6 +119,7 @@ router.post("/:movieId/delete", (req, res) => {
     });
 });
 
+// Iteration 10
 router.get("/:id/edit", (req, res) => {
   const movieId = req.params.id;
 
@@ -90,14 +141,13 @@ router.get("/:id/edit", (req, res) => {
     });
 });
 
-// /movies/:id/edit POST route
 router.post("/:id/edit", (req, res) => {
   const movieId = req.params.id;
   const { title, genre, plot, cast } = req.body;
 
   Movie.findByIdAndUpdate(movieId, { title, genre, plot, cast }, { new: true })
     .populate("cast")
-    .then((updatedMovie) => {
+    .then(() => {
       res.redirect(`/movies/${movieId}`);
     })
     .catch((updateError) => {

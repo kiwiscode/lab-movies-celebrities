@@ -6,3 +6,10 @@ body {
 a {
   color: #00b7ff;
 }
+
+.celebs-page,
+.movies-page {
+  border: 1px solid navy;
+  padding: 5px;
+  margin: 2px;
+}
